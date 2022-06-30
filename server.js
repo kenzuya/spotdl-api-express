@@ -10,8 +10,8 @@ const port = process.env.PORT || 5000
 const spotdlPORT = 8800
 const web_url = process.env.HOSTNAME_URL || 'http://localhost:5000'
 exec('spotdl web', (error, stdout, stderr) => {
-    if (error) throw new Error('Spotdl is not installed, API can\'t be running')
-    if (stderr) throw new Error('Spotdl is not installed, API can\'t be running')
+    // if (error) throw new Error('Spotdl is not installed, API can\'t be running')
+    // if (stderr) throw new Error('Spotdl is not installed, API can\'t be running')
 })
 if(!existsSync('./public')) mkdirSync('./public')
 app.use(express.static('./public'))
@@ -23,7 +23,8 @@ app.get('/', (req, res) => {
 })
 
 app.post('/info', async (req, res) => {
-    const query = req.query.url
+    const query = req.query.url.split('&')[0]
+    console.log(query);
     const result = await axios({
         url: `http://localhost:${spotdlPORT}/api/song/url?url=${encodeURIComponent(query)}`,
         method: 'GET'
@@ -31,7 +32,7 @@ app.post('/info', async (req, res) => {
     res.json(result.data)
 })
 app.post('/download', async (req, res) => {
-    const url = req.query.url
+    const url = req.query.url.split('&')[0]
     if(!url) res.json({"status": "failed", "reason": "please input link in query"})
     const {data} = await axios({
         url: `http://localhost:${spotdlPORT}/api/song/url?url=${encodeURIComponent(url)}`,
