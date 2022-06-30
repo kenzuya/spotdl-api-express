@@ -1,0 +1,1 @@
+web: pip install spotdl && npm i -g && pm2 start server.js && pm2 logs
