@@ -47,10 +47,17 @@ app.post('/download', async (req, res) => {
         exec(`spotdl download ${url} --bitrate 320k --output public`, (err, stdout, stderr) => {
             if (err) res.json(JSON.stringify({status: "failed", reason: "A unexpected error"}))
             if (stdout) {
-                const split = stdout.split(`"`)
-                data.download_url = `${web_url}/${encodeURIComponent(split[1])}.mp3`
-    
-                res.json(data)
+                if(stdout.startsWith('Skipping')) {
+                    const split = stdout.split('Skipping ')[1].replace('\r\n\r\n', "")
+                    console.log(split);
+                    data.download_url = `${web_url}/${encodeURIComponent(split)}.mp3`
+                    res.json(data)
+                } else {
+                    const split = stdout.split(`"`)
+                    data.download_url = `${web_url}/${encodeURIComponent(split[1])}.mp3`
+                    res.json(data)
+                }
+                
             }
             if(stderr) res.json(JSON.stringify({status: "failed", reason: "A unexpected error"}))
         })
