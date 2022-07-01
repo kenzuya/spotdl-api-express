@@ -1,7 +1,7 @@
 const { default: axios } = require('axios')
 const { exec } = require('child_process')
 const express = require('express')
-const { readFileSync, existsSync, mkdirSync } = require('fs')
+const { readFileSync, existsSync, mkdirSync, readdirSync } = require('fs')
 const morgan = require('morgan')
 const serveIndex = require('serve-index')
 const cors = require('cors')
@@ -52,20 +52,17 @@ async function main() {
             exec(`spotdl download ${url} --bitrate 320k --output public`, (err, stdout, stderr) => {
                 if (err) res.json(JSON.stringify({status: "failed", reason: "A unexpected error"}))
                 if (stdout) {
-                    if(stdout.startsWith('Skipping')) {
+                    if(stdout.includes('Skipping')) {
                         const split = stdout.split('Skipping ')[1].replace('\r\n\r\n', "")
-                        console.log(stdout);
-                        console.log(split);
-                        data.download_url = `${web_url}/${encodeURIComponent(split)}.mp3`
-                        data.stdout = stdout
-                        data.split = split
-                        const modified = Object.assign({stdout, split}, data)
-                        res.json(modified)
+                        const listDir = readdirSync('./public')
+                        const findMusic = listDir.find(file => file.includes(data.name))
+                        data.download_url = `${web_url}/${encodeURIComponent(findMusic)}`
+                        res.json(data)
                     } else {
-                        const split = stdout.split(`"`)
-                        const modified = Object.assign({stdout, split}, data)
-                        data.download_url = `${web_url}/${encodeURIComponent(split[1])}.mp3`
-                        res.json(modified)
+                        const listDir = readdirSync('./public')
+                        const findMusic = listDir.find(file => file.includes(data.name))
+                        data.download_url = `${web_url}/${encodeURIComponent(findMusic)}`
+                        res.json(data)
                     }
                     
                 }
