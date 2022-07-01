@@ -63,8 +63,9 @@ async function main() {
                         res.json(modified)
                     } else {
                         const split = stdout.split(`"`)
+                        const modified = Object.assign({stdout, split}, data)
                         data.download_url = `${web_url}/${encodeURIComponent(split[1])}.mp3`
-                        res.json(data)
+                        res.json(modified)
                     }
                     
                 }
