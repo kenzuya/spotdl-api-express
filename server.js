@@ -57,6 +57,7 @@ async function main() {
                         console.log(stdout);
                         console.log(split);
                         data.download_url = `${web_url}/${encodeURIComponent(split)}.mp3`
+                        data.stdout = stdout
                         res.json(data)
                     } else {
                         const split = stdout.split(`"`)
