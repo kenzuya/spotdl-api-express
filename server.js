@@ -54,6 +54,7 @@ async function main() {
                 if (stdout) {
                     if(stdout.startsWith('Skipping')) {
                         const split = stdout.split('Skipping ')[1].replace('\r\n\r\n', "")
+                        console.log(stdout);
                         console.log(split);
                         data.download_url = `${web_url}/${encodeURIComponent(split)}.mp3`
                         res.json(data)
