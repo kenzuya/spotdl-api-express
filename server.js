@@ -1,5 +1,5 @@
 const { default: axios } = require('axios')
-const { exec } = require('child_process')
+const { exec, execSync } = require('child_process')
 const express = require('express')
 const { readFileSync, existsSync, mkdirSync, readdirSync } = require('fs')
 const morgan = require('morgan')
@@ -15,7 +15,7 @@ if(!existsSync('./public')) mkdirSync('./public')
 
 
 async function main() {
-    exec('spotdl web', (error, stdout, stderr) => {
+    exec('spotdl web --no-cache', (error, stdout, stderr) => {
         // if (error) throw new Error('Spotdl is not installed, API can\'t be running')
         // if (stderr) throw new Error('Spotdl is not installed, API can\'t be running')
     })
@@ -26,6 +26,10 @@ async function main() {
     app.use(cors())
     app.get('/', (req, res) => {
         res.json({"status": "Actions Restricted"})
+    })
+    app.get('/version', (req, res) => {
+        const version = execSync('spotdl -v').toString().trim()
+        res.json(JSON.parse(JSON.stringify({version: version})))
     })
     app.post('/info', async (req, res) => {
         const query = req.query.url.split('&')[0]
@@ -71,7 +75,12 @@ async function main() {
         }
         
     })
-    
+    app.post('/search', async (req, res) => {
+        const query = req.query.query
+        // console.log(query);
+        const {data} = await axios.get(`http://localhost:${spotdlPORT}/api/songs/search?query=${query}`)
+        res.send(data)
+    })
     app.listen(port, () => console.log('Server is listening on port ' + port))
 }
 main()

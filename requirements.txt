@@ -24,7 +24,7 @@ rich==12.4.4
 six==1.16.0
 sniffio==1.2.0
 soupsieve==2.3.2.post1
-spotdl==4.0.0rc2
+spotdl==4.0.0rc3
 spotipy==2.19.0
 starlette==0.19.1
 text-unidecode==1.3
